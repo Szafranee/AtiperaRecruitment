@@ -43,7 +43,9 @@ public class GithubService {
         for (JsonNode repo : nonForkRepos) {
             String repoName = repo.get("name").asText();
             String ownerLogin = repo.get("owner").get("login").asText();
+
             List<Branch> branches = fetchBranches(username, repoName);
+
             repositories.add(new RepositoryResponse(repoName, ownerLogin, branches));
         }
 
@@ -53,12 +55,14 @@ public class GithubService {
     private List<JsonNode> filterNonForkRepositories(String reposJson) {
         try {
             JsonNode reposArray = objectMapper.readTree(reposJson);
+
             List<JsonNode> nonForkRepos = new ArrayList<>();
             for (JsonNode repo : reposArray) {
                 if (!repo.get("fork").asBoolean()) {
                     nonForkRepos.add(repo);
                 }
             }
+
             return nonForkRepos;
         } catch (Exception e) {
             return Collections.emptyList();
@@ -79,12 +83,15 @@ public class GithubService {
 
         try {
             JsonNode branchesArray = objectMapper.readTree(branchesJson);
+
             List<Branch> branches = new ArrayList<>();
             for (JsonNode branch : branchesArray) {
                 String branchName = branch.get("name").asText();
                 String lastCommitSha = branch.get("commit").get("sha").asText();
+
                 branches.add(new Branch(branchName, lastCommitSha));
             }
+
             return branches;
         } catch (Exception e) {
             return Collections.emptyList();
